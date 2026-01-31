@@ -8,7 +8,7 @@ def fetch_snapshot_proposals(space: str, first: int = 1000) -> list[dict]:
     query {
         proposals(
             first: %d, 
-            where: {space: "%s"},
+            where: {space: "%s", state: "closed"},
             orderBy: "created", 
             orderDirection: desc
         ) {
@@ -18,8 +18,8 @@ def fetch_snapshot_proposals(space: str, first: int = 1000) -> list[dict]:
             choices
             scores
             scores_total
-            state
             created
+            start
             end
             votes
         }
@@ -45,8 +45,10 @@ def fetch_snapshot_proposals(space: str, first: int = 1000) -> list[dict]:
             "metadata": {
                 "source": "snapshot",
                 "protocol": space.replace(".eth", ""),
-                "date": datetime.fromtimestamp(p["created"]).isoformat(),
-                "state": p["state"], 
+                "date_created": datetime.fromtimestamp(p["created"]).isoformat(),
+                "date_voting_start": datetime.fromtimestamp(p["start"]).isoformat(),
+                "date_voting_end": datetime.fromtimestamp(p["end"]).isoformat(),
+                "state": "closed", 
                 "outcome": outcome,
                 "votes": p["votes"],
                 "scores_total": p["scores_total"],
