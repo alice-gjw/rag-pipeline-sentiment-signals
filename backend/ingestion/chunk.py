@@ -1,5 +1,5 @@
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from logging_config import logger
+from config.logging_config import logger
 
 def chunk_documents(all_docs):
     text_splitter = RecursiveCharacterTextSplitter(
@@ -9,9 +9,11 @@ def chunk_documents(all_docs):
     )
 
     chunked_docs = []
+    
+    logger.info(f"Total documents to chunk: {len(all_docs)}")
+    logger.info("Chunking starting ... ")
+    
     for doc in all_docs: 
-        logger.info(f"Total documents to chunk: {len(all_docs)}")
-        logger.info("Chunking starting ... ")
         chunks = text_splitter.split_text(doc["text"])
         for i, chunk in enumerate(chunks): 
             chunked_docs.append({

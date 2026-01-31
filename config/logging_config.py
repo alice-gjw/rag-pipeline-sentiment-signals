@@ -1,4 +1,4 @@
-# Simple logger, only logging info
+# Simple logger
 
 import logging
 import sys
