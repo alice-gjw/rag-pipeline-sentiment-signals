@@ -1,12 +1,12 @@
 # Snapshot governance spaces mapped to their Binance trading symbols
 spaces:
-  aave.eth: AAVEUSDT
+  aavedao.eth: AAVEUSDT
   uniswapgovernance.eth: UNIUSDT
   lido-snapshot.eth: LDOUSDT
   ens.eth: ENSUSDT
   arbitrumfoundation.eth: ARBUSDT
   opcollective.eth: OPUSDT
   balancer.eth: BALUSDT
-  sushi.eth: SUSHIUSDT
+  sushigov.eth: SUSHIUSDT
   curve.eth: CRVUSDT
   1inch.eth: 1INCHUSDT
