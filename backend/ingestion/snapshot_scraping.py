@@ -33,13 +33,15 @@ def fetch_snapshot_proposals(space: str, first: int = 1000) -> list[dict]:
     data = response.json()["data"]["proposals"]
     
     documents = []
-    for p in data: 
+    for p in data:
         if p["scores"] and p["choices"]:
             winner_idx = p["scores"].index(max(p["scores"]))
             outcome = p["choices"][winner_idx]
         else:
-            outcome = "unknown" 
-        
+            outcome = "unknown"
+
+        logger.info(f"Fetched: {p['title'][:60]}")
+
         documents.append({
             "text": f"Title: {p['title']}\n\n{p['body']}",
             "metadata": {
@@ -48,12 +50,14 @@ def fetch_snapshot_proposals(space: str, first: int = 1000) -> list[dict]:
                 "date_created": datetime.fromtimestamp(p["created"]).isoformat(),
                 "date_voting_start": datetime.fromtimestamp(p["start"]).isoformat(),
                 "date_voting_end": datetime.fromtimestamp(p["end"]).isoformat(),
-                "state": "closed", 
+                "_ts_created": p["created"],
+                "_ts_start": p["start"],
+                "_ts_end": p["end"],
+                "state": "closed",
                 "outcome": outcome,
                 "votes": p["votes"],
                 "scores_total": p["scores_total"],
                 "proposal_id": p["id"],
-                "doc_type": "governance_proposal"
             }
         })
     return documents
