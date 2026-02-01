@@ -43,13 +43,15 @@ def get_price_at_timestamp(symbol: str, timestamp: int) -> float | None:
         logger.warning(f"Failed to fetch price for {symbol} at {timestamp}: {e}")                                                               
         return None  
     
-def fetch_prices_for_proposal(proposal: dict, space: str) -> dict | None:
-    """Fetch prices for a single proposal. Returns cached prices or fetches from API."""
+def fetch_prices_for_proposal(proposal: dict, space: str, counter: list = None) -> dict | None:
+    """Fetch prices for a single proposal. Returns cached prices or fetches from API.
+
+    counter: optional [current, total] list - current is incremented on each API fetch.
+    """
     proposal_id = proposal["metadata"]["proposal_id"]
 
     cached = get_cached_prices(proposal_id)
     if cached:
-        logger.info(f"Using cached prices for: {proposal_id[:8]}...")
         return cached
 
     symbol = all_spaces.get(space)
@@ -66,7 +68,11 @@ def fetch_prices_for_proposal(proposal: dict, space: str) -> dict | None:
     time.sleep(0.1)
     price_end = get_price_at_timestamp(symbol, meta["_ts_end"])
 
-    logger.info(f"Fetched prices for: {title}")
+    if counter:
+        counter[0] += 1
+        logger.info(f"[{counter[0]}/{counter[1]}] Fetched prices for: {title}")
+    else:
+        logger.info(f"Fetched prices for: {title}")
 
     prices = {
         "price_at_created": price_created,

@@ -1,7 +1,7 @@
 from config import all_spaces
 from config.logging_config import logger
 from backend.ingestion.snapshot_scraping import fetch_snapshot_proposals
-from backend.ingestion.price_fetcher import fetch_prices_for_proposal
+from backend.ingestion.price_fetcher import fetch_prices_for_proposal, get_cached_prices
 from backend.ingestion.chunk import chunk_documents
 from backend.ingestion.embed import get_existing_proposal_ids, embed_documents
 
@@ -22,10 +22,13 @@ def main(spaces):
         logger.info("No new proposals to process")
         return
 
-    logger.info(f"Fetching prices for {len(new_proposals)} proposals")
+    to_fetch = sum(1 for p in new_proposals if not get_cached_prices(p["metadata"]["proposal_id"]))
+    logger.info(f"Fetching prices: {to_fetch} from API, {len(new_proposals) - to_fetch} cached")
+
+    counter = [0, to_fetch]
     for proposal in new_proposals:
         space = proposal["metadata"]["protocol"] + ".eth"
-        prices = fetch_prices_for_proposal(proposal, space)
+        prices = fetch_prices_for_proposal(proposal, space, counter)
         if prices:
             proposal["metadata"].update(prices)
 
