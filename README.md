@@ -115,9 +115,13 @@ Configured in `config/spaces.yaml`:
 ```bash
 # Install dependencies
 uv sync
+```
 
-# Create .env file with Groq API key (for query pipeline)
-echo "GROQ_API_KEY=your_key_here" > .env
+Create a `.env` file in the project root:
+
+```
+GROQ_API_KEY=your_key_here      # Required for query pipeline
+HF_TOKEN=your_token_here        # Optional: suppresses HuggingFace rate limit warnings
 ```
 
 ## Project Structure

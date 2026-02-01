@@ -1,5 +1,8 @@
 import yaml
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 _config_path = Path(__file__).parent / "spaces.yaml"
 

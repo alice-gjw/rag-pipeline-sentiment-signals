@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from config.logging_config import logger
 import chromadb
 from chromadb.utils import embedding_functions
