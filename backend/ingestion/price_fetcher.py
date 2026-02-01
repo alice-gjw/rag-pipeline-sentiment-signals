@@ -1,20 +1,7 @@
 import requests
 import time
-from config.logging_config import logger
-
-# Snapshot space -> Binance trading pair                                                                                                        
-SPACE_TO_SYMBOL = {                                                                                                                             
-    "aave.eth": "AAVEUSDT",                                                                                                                     
-    "uniswapgovernance.eth": "UNIUSDT",                                                                                                         
-    "lido-snapshot.eth": "LDOUSDT",                                                                                                             
-    "ens.eth": "ENSUSDT",                                                                                                                       
-    "arbitrumfoundation.eth": "ARBUSDT",                                                                                                        
-    "opcollective.eth": "OPUSDT",                                                                                                               
-    "balancer.eth": "BALUSDT",                                                                                                                  
-    "sushi.eth": "SUSHIUSDT",                                                                                                                   
-    "curve.eth": "CRVUSDT",                                                                                                                     
-    "1inch.eth": "1INCHUSDT",                                                                                                                   
-}    
+from config import all_spaces
+from config.logging_config import logger    
 
 def get_price_at_timestamp(symbol: str, timestamp: int) -> float | None:
     try: 
@@ -36,8 +23,8 @@ def get_price_at_timestamp(symbol: str, timestamp: int) -> float | None:
         logger.warning(f"Failed to fetch price for {symbol} at {timestamp}: {e}")                                                               
         return None  
     
-def fetch_proposal_metadata_to_embed(documents: list[dict], space:str) -> list[dict]:
-        symbol = SPACE_TO_SYMBOL.get(space)
+def fetch_proposal_metadata_to_embed(documents: list[dict], space: str) -> list[dict]:
+        symbol = all_spaces.get(space)
         
         if not symbol: 
             logger.warning(f"No Binance symbol for {space}, skipping price enrichment")                                                             
