@@ -8,6 +8,8 @@ dependencies = [
     "chromadb>=1.4.1",
     "langchain>=1.2.7",
     "langchain-community>=0.4.1",
+    "langchain-groq>=1.1.1",
+    "pyyaml>=6.0.3",
     "requests>=2.32.5",
     "sentence-transformers>=5.2.2",
 ]
