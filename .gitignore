@@ -3,3 +3,4 @@ logs/
 .venv/
 .python-version
 uv.lock
+.env
