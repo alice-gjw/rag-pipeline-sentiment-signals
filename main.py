@@ -6,8 +6,6 @@ from backend.ingestion.chunk import chunk_documents
 from backend.ingestion.embed import get_existing_proposal_ids, embed_documents
 
 
-
-
 def main(spaces):
     existing_ids = get_existing_proposal_ids()
     
@@ -26,6 +24,7 @@ def main(spaces):
         
     chunked_docs = chunk_documents(all_docs)
     embed_documents(chunked_docs)
+    logger.info("Ingestion Pipeline Completed")
     
 if __name__ == "__main__":
     main(all_spaces.keys()) 
