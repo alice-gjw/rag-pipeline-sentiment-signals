@@ -70,9 +70,8 @@ def fetch_prices_for_proposal(proposal: dict, space: str, counter: list = None) 
 
     if counter:
         counter[0] += 1
-        logger.info(f"[{counter[0]}/{counter[1]}] Fetched prices for: {title}")
-    else:
-        logger.info(f"Fetched prices for: {title}")
+        if counter[0] % 10 == 0 or counter[0] == counter[1]:
+            logger.info(f"[{counter[0]}/{counter[1]}] Fetched prices for: {title}")
 
     prices = {
         "price_at_created": price_created,

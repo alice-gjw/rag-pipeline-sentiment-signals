@@ -67,9 +67,17 @@ def score_event(event_description: str) -> dict:
             price_info = f"Price change during vote: {price_change:+.1f}%"
 
         context_parts.append(f"{proposal_label}\n{doc[:500]}\n{price_info}")
+        protocol = meta.get("protocol", "")
+        proposal_id = meta.get("proposal_id", "")
+        url = f"https://snapshot.org/#/{protocol}.eth/proposal/{proposal_id}"
+
         sources.append({
             "proposal": proposal_label,
-            "price_change": round(price_change, 2) if price_change else None
+            "outcome": meta.get("outcome", "unknown"),
+            "price_at_created": meta.get("price_at_created"),
+            "price_at_start": meta.get("price_at_start"),
+            "price_at_end": meta.get("price_at_end"),
+            "url": url,
         })
 
     context = "\n---\n".join(context_parts)

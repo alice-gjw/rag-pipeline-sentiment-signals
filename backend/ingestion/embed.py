@@ -6,6 +6,11 @@ import chromadb
 from chromadb.utils import embedding_functions
 
 
+def clean_metadata(meta: dict) -> dict:
+    """Remove None values from metadata (ChromaDB doesn't accept them)."""
+    return {k: v for k, v in meta.items() if v is not None}
+
+
 def create_metadata_doc(meta):
     """Create a metadata document for embedding (one per proposal)."""
     return f"""Protocol: {meta.get('protocol', 'unknown')}
@@ -64,13 +69,13 @@ def embed_documents(chunked_docs):
             meta = chunks[0]["metadata"]
             metadata_doc = create_metadata_doc(meta)
             docs_to_add.append(metadata_doc)
-            metas_to_add.append({**meta, "doc_type": "proposal_metadata"})
+            metas_to_add.append(clean_metadata({**meta, "doc_type": "proposal_metadata"}))
             ids_to_add.append(f"meta_{proposal_id}")
 
             # Add content chunks
             for chunk in chunks:
                 docs_to_add.append(chunk["text"])
-                metas_to_add.append({**chunk["metadata"], "doc_type": "snapshot_proposals"})
+                metas_to_add.append(clean_metadata({**chunk["metadata"], "doc_type": "snapshot_proposals"}))
                 ids_to_add.append(f"chunk_{doc_counter}")
                 doc_counter += 1
 

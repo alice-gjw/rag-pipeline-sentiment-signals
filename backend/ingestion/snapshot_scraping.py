@@ -2,7 +2,15 @@ import requests
 from datetime import datetime
 from config.logging_config import logger
 
-# Constructing GraphQL query to send to Snapshot's API 
+
+def is_english(text: str) -> bool:
+    """Check if text is mostly ASCII (simple English filter)."""
+    if not text:
+        return False
+    ascii_chars = sum(1 for c in text if ord(c) < 128)
+    return ascii_chars / len(text) > 0.8
+
+
 def fetch_snapshot_proposals(space: str, first: int = 1000) -> list[dict]:
     query = """
     query {
@@ -34,6 +42,9 @@ def fetch_snapshot_proposals(space: str, first: int = 1000) -> list[dict]:
     
     documents = []
     for p in data:
+        if not is_english(p["title"]):
+            continue
+
         if p["scores"] and p["choices"]:
             winner_idx = p["scores"].index(max(p["scores"]))
             outcome = p["choices"][winner_idx]
