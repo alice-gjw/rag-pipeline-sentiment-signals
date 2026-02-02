@@ -2,7 +2,6 @@ logs/
 .claude/
 .venv/
 .python-version
-uv.lock
 .env
 chroma_db/
 __pycache__
