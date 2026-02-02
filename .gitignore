@@ -6,3 +6,4 @@ logs/
 chroma_db/
 __pycache__
 data/
+TODO.md
