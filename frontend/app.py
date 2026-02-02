@@ -50,6 +50,19 @@ with gr.Blocks(title="Governance Sentiment Analyzer") as app:
             )
             submit_btn = gr.Button("Analyze", variant="primary")
 
+            gr.Examples(
+                examples=[
+                    ["Proposal to reduce staking rewards by 50%"],
+                    ["Treasury diversification into stablecoins"],
+                    ["Increase liquidity mining incentives"],
+                    ["Enable protocol fee switch"],
+                    ["Grant funding for ecosystem development"],
+                    ["Change voting quorum requirements"],
+                ],
+                inputs=query_input,
+                label="Try these examples"
+            )
+
         with gr.Column():
             prediction_output = gr.Textbox(label="Predicted Price Impact", interactive=False)
             confidence_output = gr.Textbox(label="Confidence", interactive=False)

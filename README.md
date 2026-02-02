@@ -1,153 +1,110 @@
 # RAG Pipeline for Crypto Governance Sentiment Signals
 
-Query historical governance proposals to understand how similar events affected token prices.
+Predict how governance events will affect token prices based on historical proposals.
 
-## Overview
+## Quick Start
 
-When similar governance events happened in the past, what did the token price do? This pipeline:
-1. Fetches closed governance proposals from Snapshot
-2. Enriches them with token prices at 3 key timestamps (creation, voting start, voting end)
-3. Embeds and stores in ChromaDB for semantic search
-4. Enables RAG-based sentiment scoring for new governance events
+### 1. Setup
 
-## Two Pipelines
+```bash
+# Install dependencies
+uv sync
 
-### 1. Ingestion Pipeline (Scrape Data)
+# Create .env file
+echo "GROQ_API_KEY=your_key_here" > .env
+```
 
-Fetches proposals, enriches with prices, and stores embeddings.
+### 2. Ingest Data (one-time)
 
 ```bash
 python -m backend.ingestion.main
 ```
 
-```
-┌─────────────────────┐
-│  Snapshot GraphQL   │  Fetch closed proposals 
-└─────────┬───────────┘
-          │
-          ▼
-┌─────────────────────┐
-│   Binance API       │  Get token prices at 3 timestamps per proposal
-└─────────┬───────────┘
-          │
-          ▼
-┌─────────────────────┐
-│   Chunking          │  Split proposal text (800 chars, 150 overlap)
-└─────────┬───────────┘
-          │
-          ▼
-┌─────────────────────┐
-│   Embedding         │  Create embeddings + metadata docs
-│   (ChromaDB)        │  - snapshot_proposals (content chunks)
-└─────────────────────┘  - proposal_metadata (timing/prices)
-```
+This fetches proposals from Snapshot, enriches with Binance price data, and stores embeddings locally in ChromaDB.
 
-### 2. Query Pipeline (Agent Prediction)
-
-Query similar proposals and get price impact predictions.
+### 3. Run the App
 
 ```bash
-python -m backend.agent.rag_sentiment_scoring
+python -m frontend.app
 ```
 
-```
-┌─────────────────────┐
-│   User Query        │  "Proposal to reduce staking rewards by 50%"
-└─────────┬───────────┘
-          │
-          ▼
-┌─────────────────────┐
-│  Similarity Search  │  Find similar proposals in ChromaDB
-│   (ChromaDB)        │
-└─────────┬───────────┘
-          │
-          ▼
-┌─────────────────────┐
-│   Agent (Groq LLM)  │  Analyze historical price impacts
-└─────────┬───────────┘
-          │
-          ▼
-┌─────────────────────┐
-│   Output            │  Prediction + confidence + sources
-└─────────────────────┘
-```
+Open `http://127.0.0.1:7860` in your browser.
 
-**Example output:**
-```json
-{
-  "prediction": -0.04,
-  "confidence": 0.75,
-  "reasoning": "Similar staking reward reductions led to 3-5% price drops",
-  "sources": [
-    {"proposal": "[AAVE] Reduce Safety Module staking rewards", "price_change": -3.2},
-    {"proposal": "[LIDO] Adjust staking APR parameters", "price_change": -1.8}
-  ]
-}
-```
-
-**Usage in code:**
-```python
-from backend.agent.rag_sentiment_scoring import score_event
-
-result = score_event("Proposal to reduce staking rewards by 50%")
-print(result)
-```
-
-## Supported Spaces
-
-Configured in `config/spaces.yaml`:
-
-| Space | Token |
-|-------|-------|
-| aave.eth | AAVE |
-| uniswapgovernance.eth | UNI |
-| lido-snapshot.eth | LDO |
-| ens.eth | ENS |
-| arbitrumfoundation.eth | ARB |
-| opcollective.eth | OP |
-| balancer.eth | BAL |
-| sushi.eth | SUSHI |
-| curve.eth | CRV |
-| 1inch.eth | 1INCH |
-
-## Installation
-
-```bash
-# Install dependencies
-uv sync
-```
-
-Create a `.env` file in the project root:
+## How It Works
 
 ```
-GROQ_API_KEY=your_key_here      # Required for query pipeline
-HF_TOKEN=your_token_here        # Optional: suppresses HuggingFace rate limit warnings
+User Query: "Proposal to reduce staking rewards by 50%"
+                    |
+                    v
+        +---------------------+
+        |  ChromaDB Search    |  Find similar historical proposals
+        +---------------------+
+                    |
+                    v
+        +---------------------+
+        |  Groq LLM (Llama)   |  Analyze price impacts from similar events
+        +---------------------+
+                    |
+                    v
+        Prediction: -4.0%, Confidence: 75%
+        Sources: [AAVE] Reduce staking rewards (-3.2%), ...
 ```
 
 ## Project Structure
 
 ```
-├── config/
-│   ├── __init__.py          # Loads spaces.yaml
-│   ├── spaces.yaml          # Snapshot space → Binance symbol mapping
-│   └── logging_config.py
-├── backend/
-│   ├── ingestion/
-│   │   ├── main.py                # Ingestion pipeline entrypoint
-│   │   ├── snapshot_scraping.py   # Fetch proposals from Snapshot
-│   │   ├── price_fetcher.py       # Get prices from Binance
-│   │   ├── chunk.py               # Split documents
-│   │   └── embed.py               # Embed and store in ChromaDB
-│   └── agent/
-│       └── rag_sentiment_scoring.py  # Query pipeline + LLM scoring
-└── README.md
+backend/
+  ingestion/
+    main.py              # Ingestion pipeline
+    snapshot_scraping.py # Fetch proposals from Snapshot
+    price_fetcher.py     # Get prices from Binance
+    chunk.py             # Split documents
+    embed.py             # Store in ChromaDB
+  agent/
+    rag_sentiment_scoring.py  # RAG + LLM scoring
+
+frontend/
+  app.py                 # Gradio web interface
+
+config/
+  spaces.yaml            # Snapshot space to Binance symbol mapping
+
+chroma_db/               # Vector database (created on first run)
+  fetched_prices_data/   # Cached price data
+```
+
+## Adding Protocols
+
+Edit `config/spaces.yaml` to add or remove protocols:
+
+```yaml
+spaces:
+  aavedao.eth: AAVEUSDT        # Snapshot space: Binance trading pair
+  uniswapgovernance.eth: UNIUSDT
+  your-dao.eth: TOKENUSDT      # Add your own
+```
+
+To find the values:
+1. **Snapshot space**: Go to snapshot.org, find your DAO, copy the space ID from the URL (e.g., `aavedao.eth`)
+2. **Binance symbol**: Find the USDT trading pair on Binance (e.g., `AAVEUSDT`)
+
+After editing, re-run ingestion to fetch the new proposals:
+```bash
+python -m backend.ingestion.main
+```
+
+## Environment Variables
+
+```
+GROQ_API_KEY=xxx     # Required - for LLM predictions
+HF_TOKEN=xxx         # Optional - suppresses HuggingFace warnings
 ```
 
 ## Tech Stack
 
-- **Snapshot API** - Governance proposals
-- **Binance API** - Historical token prices
-- **ChromaDB** - Vector database
-- **SentenceTransformers** - Embeddings (all-MiniLM-L6-v2)
-- **Groq** - LLM inference (llama-3.1-8b-instant)
-- **LangChain** - Text splitting + LLM integration
+- Snapshot API - Governance proposals
+- Binance API - Historical token prices
+- ChromaDB - Vector database
+- SentenceTransformers - Embeddings (all-MiniLM-L6-v2)
+- Groq - LLM inference (llama-3.1-8b-instant)
+- Gradio - Web interface
