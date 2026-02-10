@@ -98,9 +98,9 @@ def score_event(event_description: str) -> dict:
 
     return result
 
-
-if __name__ == "__main__":
-    result = score_event(
-        "Proposal to reduce staking rewards by 50%"
-    )
-    print(json.dumps(result, indent=2))
+# python -m backend.agent.rag_sentiment_scoring (Hardcoded to test scoring logic)
+if __name__ == "__main__":                                             
+    result = score_event(                                              
+          "Proposal to reduce staking rewards by 50%" 
+    )                                                                  
+    print(json.dumps(result, indent=2))      
