@@ -1,9 +1,9 @@
 from config import all_spaces
 from config.logging_config import logger
-from backend.ingestion.snapshot_scraping import fetch_snapshot_proposals
-from backend.ingestion.price_fetcher import fetch_prices_for_proposal, get_cached_prices
-from backend.ingestion.chunk import chunk_documents
-from backend.ingestion.embed import get_existing_proposal_ids, embed_documents
+from ingestion.snapshot_scraping import fetch_snapshot_proposals
+from ingestion.price_fetcher import fetch_prices_for_proposal, get_cached_prices
+from ingestion.chunk import chunk_documents
+from ingestion.embed import get_existing_proposal_ids, embed_documents
 
 
 def main(spaces):

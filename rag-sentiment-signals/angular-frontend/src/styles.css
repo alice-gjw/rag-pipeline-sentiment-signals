@@ -1,0 +1,24 @@
+/* You can add global styles to this file, and also import other style files */
+.suggestion {                                                          
+    display: inline-block;                                             
+    white-space: nowrap;                                               
+    margin-right: 0.5rem;                                              
+    margin-bottom: 0.5rem;                                             
+    padding: 0.25rem 0.5rem;                                           
+    font-size: 0.85rem;                                                
+    background: #f0f0f0;                                               
+    border: 1px solid #ddd;                                            
+    border-radius: 4px;                                                
+    cursor: pointer;                                                   
+  }                                          
+.suggestions p { margin-bottom: 0.5rem; color: #666; }                 
+.suggestion {                                                          
+    margin-right: 0.5rem;                                              
+    padding: 0.25rem 0.5rem;                                           
+    font-size: 0.85rem;                                                
+    background: #f0f0f0;                                               
+    border: 1px solid #ddd;                                            
+    border-radius: 4px;                                                
+    cursor: pointer;                                                   
+}                                                                      
+.suggestion:hover { background: #e0e0e0; }  

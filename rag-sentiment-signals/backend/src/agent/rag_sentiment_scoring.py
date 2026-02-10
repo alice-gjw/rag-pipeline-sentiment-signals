@@ -1,7 +1,7 @@
 import json
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
-from backend.ingestion.embed import get_collection
+from ingestion.embed import get_collection
 
 load_dotenv()
 

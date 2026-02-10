@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from backend.agent.rag_sentiment_scoring import score_event
+from agent.rag_sentiment_scoring import score_event
 
 app = FastAPI()
 
