@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from agent.rag_sentiment_scoring import score_event
 
-app = FastAPI()
+router = APIRouter()
 
 app.add_middleware(
     CORSMiddleware,

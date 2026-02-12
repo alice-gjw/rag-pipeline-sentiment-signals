@@ -8,3 +8,6 @@ __pycache__
 data/
 TODO.md
 .vscode/
+
+# mine
+.good-examples/
